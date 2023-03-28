@@ -2,12 +2,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from emonet_split import EmoNet, EmoNet_
+from models.emonet_split import EmoNet, EmoNet_
 nn.InstanceNorm2d = nn.BatchNorm2d
 
-
 def get_emonet():
-    net = torch.load('model_8.pth')
+    # net = EmoNet
+    net = torch.load("/mnt/wd0/home_back/shutao/ABAW/models/model_8.pth")
+    # net.module.predictor.emo_fc_2 = nn.Sequential()
     return net
 
 
@@ -20,19 +21,20 @@ class Model_fan(nn.Module):
                                                               nn.ReLU(inplace=True),
                                                               nn.Linear(in_features=128, out_features=8, bias=True))
         # self.emonet.eval()
-        # self.predictor = EmoNet_(n_expression=0, n_reg=2)
-        # self.transformer = Transformer()
+        # self.predictor = EmoNet_(n_expression=8, n_reg=0)
         # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, imgs):
         out = self.emonet(imgs)
+        # out = y[:, 8:10]
         # print(emo_feat.shape)
         return out
 
 
 if __name__ == '__main__':
-    model = Model_fan().cuda()
+    model = Model_fan()
     print(model)
-    imgs = torch.rand(2, 3, 256, 256).cuda()
+    imgs = torch.rand(2, 3, 256, 256)
+    # feats = torch.rand(2, 10, 3, 224, 224)
     logits = model(imgs)
     print(logits)
